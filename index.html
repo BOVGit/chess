@@ -1,0 +1,118 @@
+<!-- v1.012  2021-01-12 -->
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="utf-8">
+  <title>Player ratings on chess sites</title>
+  <link rel="stylesheet" href="css/chess.css">
+  <link href='https://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+  <header>
+    <div class="projectName projectNameDif">Player ratings on chess sites</div>
+  </header>
+
+  <main>
+    <form>
+      <!-- <input class="button" type="button" value="Test" id="elemButtonTest" title="Test"> -->
+      <!-- <label for="test">
+        <input class="inputTextTest" type="text" id="elemTextTest" name="elemTextTest" title="test" placeholder="test"">
+      </label> -->
+
+      <label class="oneLine" for="elemTextLichessOrgPlayerNames">
+        <input class="inputCheck" type="checkbox" id="elemCheckLichess" name="elemCheckLichess" checked>
+        <input class="inputText" type="text" id="elemTextLichessOrgPlayerNames" name="elemTextLichessOrgPlayerNames"
+          title="Enter names of players on Lichess.org, separated by spaces"
+          placeholder="Player names on Lichess, separated by spaces">
+      </label>
+      <label class="oneLine" for="elemTextChessComPlayerNames">
+        <input class="inputCheck" type="checkbox" id="elemCheckChessCom" name="elemCheckChessCom" checked>
+        <input class="inputText" type="text" id="elemTextChessComPlayerNames" name="elemTextChessComPlayerNames"
+          title="Enter names of players on Chess.com, separated by spaces"
+          placeholder="Player names on Chess.com, separated by spaces">
+      </label>
+    </form>
+
+    <div class="TableLichess showBlock">
+      <table>
+        <thead class="THeadLichess">
+          <tr>
+            <th class="leftTopOfTable">Lichess</th>
+            <th>Bullet</th>
+            <th>Blitz</th>
+            <th>Rapid</th>
+            <th>Puzzle</th>
+            <!-- <th>On-line</th> -->
+          </tr>
+        </thead>
+        <tbody class="TBodyLichess">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="TableChessCom showBlock">
+      <table>
+        <thead class="THeadChessCom">
+          <tr>
+            <th class="leftTopOfTable">Chess.com</th>
+            <th>Bullet</th>
+            <th>Blitz</th>
+            <th>Rapid</th>
+            <th>Max Puz. / Rush</th>
+            <!-- <th>On-line</th> -->
+          </tr>
+        </thead>
+        <tbody class="TBodyChessCom">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- <section class="SectionHref">
+
+    <div class="href">
+      <a class="href" href="https://www.pychess.org">pychess.org</a>
+      <a class="href" href="https://blitztactics.com">blitztactics.com</a>
+      <p>
+        <a class="href" href="https://www.openingtree.com">openingtree.com</a>
+      </p>
+    </div>
+  </section> -->
+
+    <section class="sectionSettings">
+      <br>
+      <input class="buttonSettings" type="button" value="⚙ Settings" id="buttonSettings" title="Settings">
+    </section>
+
+  </main>
+
+  <section class="sectionSettingsArea hiddenBlock">
+    <form>
+      <fieldset>
+        <legend>Settings</legend>
+        <label for="elemAutoRefreshInterval">
+          AutoRefresh Interval in minutes (0 - not AutoRefresh):
+          <input type="text" size=10 id="elemAutoRefreshInterval" name="elemAutoRefreshInterval"
+            title="Enter AutoRefresh Interval in minutes">
+        </label>
+      </fieldset>
+    </form>
+    <br>
+    <input class=" buttonSettings" type="button" value="Return to main page" id="buttonReturnToMain"
+      title="Return to main page">
+  </section>
+
+  <footer>
+    bovgit © 2021
+    <a href="mailto:bovgit@gmail.com?subject=Player ratings on chess sites"> (e-mail)</a>
+  </footer>
+
+  <script src="js/chess.js"></script>
+
+</body>
+
+</html>
