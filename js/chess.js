@@ -2,8 +2,21 @@
 let urlHttpServiceLichess = "https://lichess.org/api/user/";
 let urlHttpServiceChessCom = "https://api.chess.com/pub/player/";
 let intervalID;
+let isFirstChessCom = false, inputNode1, inputNode2, tableNode1, tableNode2;
 
+inputNode1 = InputOrder1;
+inputNode2 = InputOrder2;
+tableNode1 = TableOrder1;
+tableNode2 = TableOrder2;
+
+//localStorage.setItem("isFirstChessCom", "");
 getDataFromStorage();
+
+//set first chess.com
+if (isFirstChessCom) {
+  changeTablesOrder();
+}
+
 refresh();
 
 elemCheckLichess.onclick = () => refreshLichess(); //refresh by click on checkBox of Lichess
@@ -14,6 +27,7 @@ document.querySelector('.THeadLichess').onclick = () => refreshLichess(); //refr
 document.querySelector('.THeadChessCom').onclick = () => refreshChessCom(); //refresh by click on Head of ChessCom Table
 
 buttonSettings.onclick = () => goSetMode();
+buttonChangeTables.onclick = () => buttonChangeTablesFunction();
 buttonReturnToMain.onclick = () => goMainMode();
 
 //hot keys
@@ -23,13 +37,11 @@ document.addEventListener('keydown', function (event) {
   }
 });
 
-// elemButtonTest.onclick = () => Test();
-
 ////////// T E S T //////////
 
+// elemButtonTest.onclick = () => Test();
+
 // function Test() {
-//   // document.getElementById("elemTextTest").value = window.devicePixelRatio; //DPR
-//   //alert(window.devicePixelRatio); //DPR
 // }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -90,7 +102,6 @@ function clearTable(thisIsLichess) {
     document.querySelector(pref + 'blitz' + rowNum).textContent = "";
     document.querySelector(pref + 'rapid' + rowNum).textContent = "";
     document.querySelector(pref + 'puzzle' + rowNum).textContent = "";
-    // document.querySelector(pref + 'online' + rowNum).textContent = "";
   }
 }
 
@@ -101,7 +112,6 @@ function clearRow(thisIsLichess, rowNum) {
   document.querySelector(pref + 'blitz' + rowNum).textContent = "";
   document.querySelector(pref + 'rapid' + rowNum).textContent = "";
   document.querySelector(pref + 'puzzle' + rowNum).textContent = "";
-  // document.querySelector(pref + 'online' + rowNum).textContent = "";
 }
 
 function clearRowLichess(rowNum) {
@@ -202,11 +212,6 @@ function addRowToTable(thisIsLichess, rowNum) {
   atrClass = letter + 'puzzle' + rowNum;
   tdPuzzleRef.setAttribute('class', atrClass);
 
-  // //online
-  // const tdOnlineRef = document.createElement('td');
-  // atrClass = letter + 'online' + rowNum;
-  // tdOnlineRef.setAttribute('class', atrClass);
-
   //new DOM-elements join to elements on HTML-page
   tableRef.appendChild(trRef);
   trRef.appendChild(thRef);
@@ -233,7 +238,6 @@ async function fetchGetLichessOrg(rowNum, playerName) {
 
     const isOnline = getJsonValue1(playerName, jsonObj, "online");
     const onlineSymbol = isOnline ? getOnlineSymbol() + " " : "";
-    // const onlineSymbol2 = isOnline ? getOnlineSymbol() : "";
 
     //player (href !)
     const playerURL = getJsonValue1(playerName, jsonObj, "url");
@@ -247,8 +251,6 @@ async function fetchGetLichessOrg(rowNum, playerName) {
     document.querySelector('.lrapid' + rowNum).textContent = getJsonValue3(playerName, jsonObj, "perfs", "rapid", "rating");
     //puzzle
     document.querySelector('.lpuzzle' + rowNum).textContent = getJsonValue3(playerName, jsonObj, "perfs", "puzzle", "rating");
-    //online
-    // document.querySelector('.lonline' + rowNum).innerHTML = onlineSymbol2;
 
   } else {
     console.log(playerName + " - this is 1st error HTTP: " + response.status);
@@ -277,7 +279,6 @@ async function fetchGetChessCom(rowNum, playerName) {
       let jsonObj = await response.json(); // read answer in JSON
       let isOnline = getJsonValue1(playerName, jsonObj, "online");
       onlineSymbol = isOnline ? getOnlineSymbol() + " " : "";
-      // document.querySelector('.conline' + rowNum).innerHTML = onlineSymbol;
     } else {
       console.log(playerName + " - this is 4 error HTTP: " + response.status);
     };
@@ -292,8 +293,6 @@ async function fetchGetChessCom(rowNum, playerName) {
     if (response.ok) { // HTTP-state in 200-299
       let jsonObj = await response.json(); // read answer in JSON
       playerURL = getJsonValue1(playerName, jsonObj, "url");
-      //createdAt = getDateYYYYMMDD(new Date(getJsonValue1(playerName, jsonObj, "joined")));
-      //createdAt = getDateYYYYMMDD(new Date(jsonObj.joined));
     } else {
       console.log(playerName + " - this is 2a error HTTP: " + response.status);
     };
@@ -325,7 +324,8 @@ async function fetchGetChessCom(rowNum, playerName) {
     //max puzzle / rush
     tactics = getJsonValue3(playerName, jsonObj, "tactics", "highest", "rating");
     rush = getJsonValue3(playerName, jsonObj, "puzzle_rush", "best", "score");
-    value = (tactics !== "" || rush !== "") ? puzzle = tactics + " / " + rush : "";
+    // value = (tactics !== "" || rush !== "") ? puzzle = tactics + " / " + rush : "";
+    value = (tactics !== "" || rush !== "") ? tactics + " / " + rush : "";
     document.querySelector('.cpuzzle' + rowNum).textContent = value;
   } else {
     console.log(playerName + " - this is 3 error HTTP: " + response.status);
@@ -387,6 +387,11 @@ function goMainMode() {
   document.querySelector("main").style.display = 'block'; //section is visible
 }
 
+function buttonChangeTablesFunction() {
+  changeTablesOrder();
+  setFirstChessComToStorage();
+}
+
 //////////////////////////////////////////////////////////
 
 function getDataFromStorage() {
@@ -406,6 +411,9 @@ function getDataFromStorage() {
   v = localStorage.getItem("ChessComChecked");
   document.getElementById("elemCheckChessCom").checked = (v === "1" ? true : false);
 
+  v = localStorage.getItem("isFirstChessCom");
+  isFirstChessCom = (v === "1" ? true : false);
+
   v = localStorage.getItem("AutoRefreshInterval");
   document.getElementById("elemAutoRefreshInterval").value = v;
 }
@@ -424,6 +432,12 @@ function setDataToStorage() {
   localStorage.setItem("ChessComChecked", v);
 }
 
+function setFirstChessComToStorage() {
+  isFirstChessCom = !isFirstChessCom;
+  const v = (isFirstChessCom ? "1" : "");
+  localStorage.setItem("isFirstChessCom", v);
+}
+
 ///////////////////////////////////////////////////////////
 
 function SetAutoRefresh() {
@@ -436,6 +450,20 @@ function SetAutoRefresh() {
       intervalID = setInterval(refresh, milliSeconds);
     }
   }
+}
+
+function changeTablesOrder() {
+  let t;
+
+  inputNode2.parentNode.insertBefore(inputNode2, inputNode1);
+  t = inputNode1;
+  inputNode1 = inputNode2;
+  inputNode2 = t;
+
+  tableNode2.parentNode.insertBefore(tableNode2, tableNode1);
+  t = tableNode1;
+  tableNode1 = tableNode2;
+  tableNode2 = t;
 }
 
 ///////////////////////////////////////////////////////////
