@@ -17,19 +17,20 @@
   </header>
 
   <main>
+
     <form>
       <!-- <input class="button" type="button" value="Test" id="elemButtonTest" title="Test"> -->
       <!-- <label for="test">
         <input class="inputTextTest" type="text" id="elemTextTest" name="elemTextTest" title="test" placeholder="test"">
       </label> -->
 
-      <label class="oneLine" for="elemTextLichessOrgPlayerNames">
+      <label id="InputOrder1" class="oneLine" for="elemTextLichessOrgPlayerNames">
         <input class="inputCheck" type="checkbox" id="elemCheckLichess" name="elemCheckLichess" checked>
         <input class="inputText" type="text" id="elemTextLichessOrgPlayerNames" name="elemTextLichessOrgPlayerNames"
           title="Enter names of players on Lichess.org, separated by spaces"
           placeholder="Player names on Lichess, separated by spaces">
       </label>
-      <label class="oneLine" for="elemTextChessComPlayerNames">
+      <label id="InputOrder2" class="oneLine" for="elemTextChessComPlayerNames">
         <input class="inputCheck" type="checkbox" id="elemCheckChessCom" name="elemCheckChessCom" checked>
         <input class="inputText" type="text" id="elemTextChessComPlayerNames" name="elemTextChessComPlayerNames"
           title="Enter names of players on Chess.com, separated by spaces"
@@ -37,7 +38,7 @@
       </label>
     </form>
 
-    <div class="TableLichess showBlock">
+    <div id="TableOrder1" class="TableLichess showBlock">
       <table>
         <thead class="THeadLichess">
           <tr>
@@ -46,7 +47,6 @@
             <th>Blitz</th>
             <th>Rapid</th>
             <th>Puzzle</th>
-            <!-- <th>On-line</th> -->
           </tr>
         </thead>
         <tbody class="TBodyLichess">
@@ -54,7 +54,7 @@
       </table>
     </div>
 
-    <div class="TableChessCom showBlock">
+    <div id="TableOrder2" class="TableChessCom showBlock">
       <table>
         <thead class="THeadChessCom">
           <tr>
@@ -63,7 +63,6 @@
             <th>Blitz</th>
             <th>Rapid</th>
             <th>Max Puz. / Rush</th>
-            <!-- <th>On-line</th> -->
           </tr>
         </thead>
         <tbody class="TBodyChessCom">
@@ -71,20 +70,11 @@
       </table>
     </div>
 
-    <!-- <section class="SectionHref">
-
-    <div class="href">
-      <a class="href" href="https://www.pychess.org">pychess.org</a>
-      <a class="href" href="https://blitztactics.com">blitztactics.com</a>
-      <p>
-        <a class="href" href="https://www.openingtree.com">openingtree.com</a>
-      </p>
-    </div>
-  </section> -->
-
     <section class="sectionSettings">
       <br>
       <input class="buttonSettings" type="button" value="⚙ Settings" id="buttonSettings" title="Settings">
+      <input class="buttonChangeTables" type="button" value="↕" id="buttonChangeTables" title="Change tables order">
+      <input class="buttonChangeTables2" type="button" value="⇕" id="buttonChangeTables2" title="Change tables order">
     </section>
 
   </main>
