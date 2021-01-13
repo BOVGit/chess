@@ -6,8 +6,6 @@ html {
 
 /* mobile devices < 768px- begin */
 
-/*  */
-
 body {
   margin-left: 0;
   width: 100vw;
@@ -20,7 +18,6 @@ body {
 /* mobile devices - end */
 
 /* PC & notebooks >= 768px - begin */
-
 @media (min-width: 768px) {
   body {
     margin-left: 30vw;
@@ -32,7 +29,6 @@ body {
 }
 
 /* PC & notebooks >= 768px - end */
-
 .projectName {
   font-weight: bold;
   font-style: italic;
@@ -162,7 +158,8 @@ td {
 
 footer {
   font-size: small;
-  margin: auto; /* width: 100%; */
+  margin: auto;
+  /* width: 100%; */
 }
 
 /* --------------------- */
