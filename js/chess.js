@@ -1,4 +1,4 @@
-//v1.015 2021-01-12
+//v1.016 2021-01-13
 let urlHttpServiceLichess = "https://lichess.org/api/user/";
 let urlHttpServiceChessCom = "https://api.chess.com/pub/player/";
 let intervalID;
