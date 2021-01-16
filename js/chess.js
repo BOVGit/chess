@@ -1,4 +1,4 @@
-//v1.018 2021-01-16
+//v1.019 2021-01-16
 let urlHttpServiceLichess = "https://lichess.org/api/user/";
 let urlHttpServiceChessCom = "https://api.chess.com/pub/player/";
 let intervalID;
@@ -171,6 +171,9 @@ function sortTable(thisIsLichess, timeControl) {
     return y[i] - x[i]; //desc
   })
 
+  //delete sortSymbolAtHead from previous sorted column
+  delSortSymbolAtHeadFromPreviousSortedColumn(thisIsLichess);
+
   // <th class="THeadbulletLichess">Bullet</th>
   // <th class="THeadbulletChessCom">Bullet</th>
   selector = '.THead' + timeControl + (thisIsLichess ? 'Lichess' : 'ChessCom');
@@ -180,16 +183,6 @@ function sortTable(thisIsLichess, timeControl) {
   lastSymbol = s.slice(-1);
   if (lastSymbol !== sortSymbolAtHead) {
     document.querySelector(selector).textContent += sortSymbolAtHead;
-  }
-
-  //delete sortSymbolAtHead from previous sorted column
-  selectorPrev = thisIsLichess ? lastSortSelectorLichess : lastSortSelectorChessCom;
-  if (selectorPrev !== '') {
-    s = document.querySelector(selectorPrev).textContent;
-    lastSymbol = s.slice(-1);
-    if (lastSymbol === sortSymbolAtHead) {
-      document.querySelector(selectorPrev).textContent = s.slice(0, -1);
-    }
   }
 
   //set lastSortSelector
@@ -211,6 +204,18 @@ function sortTable(thisIsLichess, timeControl) {
       document.querySelector(pref + 'puzzle' + rowNum).textContent = a[r][4] === 0 ? "" : a[r][4];
     } else {
       document.querySelector(pref + 'puzzle' + rowNum).textContent = (a[r][4] === 0 ? "" : a[r][4]) + a[r][5]; //ChessCOm: add Rush
+    }
+  }
+}
+
+//delete sortSymbolAtHead from previous sorted column
+function delSortSymbolAtHeadFromPreviousSortedColumn(thisIsLichess) {
+  selectorPrev = thisIsLichess ? lastSortSelectorLichess : lastSortSelectorChessCom;
+  if (selectorPrev !== '') {
+    let s = document.querySelector(selectorPrev).textContent;
+    let lastSymbol = s.slice(-1);
+    if (lastSymbol === sortSymbolAtHead) {
+      document.querySelector(selectorPrev).textContent = s.slice(0, -1);
     }
   }
 }
@@ -242,6 +247,12 @@ function refresh() {
 }
 
 function refreshOneTable(thisIsLichess) {
+  delSortSymbolAtHeadFromPreviousSortedColumn(thisIsLichess);
+  if (thisIsLichess) {
+    lastSortSelectorLichess = "";
+  } else {
+    lastSortSelectorChessCom = "";
+  }
   SelectorTable = thisIsLichess ? ".TableLichess" : ".TableChessCom";
   SelectorCheck = thisIsLichess ? "elemCheckLichess" : "elemCheckChessCom";
   let elem = document.querySelector(SelectorTable);
