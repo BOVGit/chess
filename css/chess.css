@@ -1,4 +1,4 @@
-/* v1.018  2021-01-13 */
+/* v1.019  2021-01-16 */
 
 html {
   font-family: 'helvetica neue', helvetica, arial, sans-serif;
@@ -82,11 +82,11 @@ table {
 }
 
 thead th:nth-child(1) {
-  width: 37%;
+  width: 35%;
 }
 
 thead th:nth-child(2) {
-  width: 14%;
+  width: 15%;
 }
 
 thead th:nth-child(3) {
@@ -94,7 +94,7 @@ thead th:nth-child(3) {
 }
 
 thead th:nth-child(4) {
-  width: 14%;
+  width: 15%;
 }
 
 thead th:nth-child(5) {
