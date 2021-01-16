@@ -1,15 +1,22 @@
-//v1.016 2021-01-13
+//v1.018 2021-01-16
 let urlHttpServiceLichess = "https://lichess.org/api/user/";
 let urlHttpServiceChessCom = "https://api.chess.com/pub/player/";
 let intervalID;
 let isFirstChessCom = false, inputNode1, inputNode2, tableNode1, tableNode2;
+let mapTimeControl = new Map([
+  ['player', 0],
+  ['bullet', 1],
+  ['blitz', 2],
+  ['rapid', 3],
+  ['puzzle', 4]
+]);
+let lastSortSelectorLichess = "", lastSortSelectorChessCom = "", sortSymbolAtHead = "↑";
 
 inputNode1 = InputOrder1;
 inputNode2 = InputOrder2;
 tableNode1 = TableOrder1;
 tableNode2 = TableOrder2;
 
-//localStorage.setItem("isFirstChessCom", "");
 getDataFromStorage();
 
 //set first chess.com
@@ -19,18 +26,31 @@ if (isFirstChessCom) {
 
 refresh();
 
+// ------------- On-Click ---------------
 elemCheckLichess.onclick = () => refreshLichess(); //refresh by click on checkBox of Lichess
 elemCheckChessCom.onclick = () => refreshChessCom(); //refresh by click on checkBox of ChessCom
 
 document.querySelector('.projectName').onclick = () => refresh(); //refresh by click on projectName
-document.querySelector('.THeadLichess').onclick = () => refreshLichess(); //refresh by click on Head of Lichess Table
-document.querySelector('.THeadChessCom').onclick = () => refreshChessCom(); //refresh by click on Head of ChessCom Table
+document.querySelector('.THeadPlayerLichess').onclick = () => refreshLichess(); //refresh by click on 1-st Head of Lichess Table
+document.querySelector('.THeadPlayerChessCom').onclick = () => refreshChessCom(); //refresh by click on 1-st Head of ChessCom Table
+
+//sort columns in Lichess
+document.querySelector('.THeadbulletLichess').onclick = () => sortBulletLichess();
+document.querySelector('.THeadblitzLichess').onclick = () => sortBlitzLichess();
+document.querySelector('.THeadrapidLichess').onclick = () => sortRapidLichess();
+document.querySelector('.THeadpuzzleLichess').onclick = () => sortPuzzleLichess();
+
+// //sort columns in Chess.com
+document.querySelector('.THeadbulletChessCom').onclick = () => sortBulletChessCom();
+document.querySelector('.THeadblitzChessCom').onclick = () => sortBlitzChessCom();
+document.querySelector('.THeadrapidChessCom').onclick = () => sortRapidChessCom();
+document.querySelector('.THeadpuzzleChessCom').onclick = () => sortPuzzleChessCom();
 
 buttonSettings.onclick = () => goSetMode();
 buttonChangeTables.onclick = () => buttonChangeTablesFunction();
 buttonReturnToMain.onclick = () => goMainMode();
 
-//hot keys
+// ------------- hot keys ---------------
 document.addEventListener('keydown', function (event) {
   if (event.key === "Enter") { //Enter
     refresh();
@@ -43,6 +63,157 @@ document.addEventListener('keydown', function (event) {
 
 // function Test() {
 // }
+
+/////////////////////////////////////////////////////////////////////////////
+
+//sort Bullet in Lichess Table
+function sortBulletLichess() {
+  const thisIsLichess = true;
+  const timeControl = "bullet";
+  sortTable(thisIsLichess, timeControl);
+}
+//sort Blitz in Lichess Table
+function sortBlitzLichess() {
+  const thisIsLichess = true;
+  const timeControl = "blitz";
+  sortTable(thisIsLichess, timeControl);
+}
+//sort Rapid in Lichess Table
+function sortRapidLichess() {
+  const thisIsLichess = true;
+  const timeControl = "rapid";
+  sortTable(thisIsLichess, timeControl);
+}
+//sort Puzzle in Lichess Table
+function sortPuzzleLichess() {
+  const thisIsLichess = true;
+  const timeControl = "puzzle";
+  sortTable(thisIsLichess, timeControl);
+}
+
+//sort Bullet in ChessCom Table
+function sortBulletChessCom() {
+  const thisIsLichess = false;
+  const timeControl = "bullet";
+  sortTable(thisIsLichess, timeControl);
+}
+//sort Blitz in ChessCom Table
+function sortBlitzChessCom() {
+  const thisIsLichess = false;
+  const timeControl = "blitz";
+  sortTable(thisIsLichess, timeControl);
+}
+//sort Rapid in ChessCom Table
+function sortRapidChessCom() {
+  const thisIsLichess = false;
+  const timeControl = "rapid";
+  sortTable(thisIsLichess, timeControl);
+}
+//sort Puzzle in ChessCom Table
+function sortPuzzleChessCom() {
+  const thisIsLichess = false;
+  const timeControl = "puzzle";
+  sortTable(thisIsLichess, timeControl);
+}
+
+//sort columns ("bullet", "blitz", "rapid", "puzzle") in Table
+function sortTable(thisIsLichess, timeControl) {
+
+  let tableRef = getChessTableRef(thisIsLichess);
+  let r, rowCount = tableRef.rows.length;
+  let c, cellcount, cells;
+  let s, n;
+
+  if (rowCount === 0) {
+    return;
+  }
+
+  let a = new Array(rowCount);
+
+  //fill array from table
+  for (r = 0; r < rowCount; r++) {
+    cells = tableRef.rows[r].cells;
+    cellcount = cells.length;
+    a[r] = new Array(cellcount + 1); //"+1" for Rush from ChessCom
+    for (c = 0; c < cellcount; c++) {
+      s = (c === 0) ? cells[c].innerHTML : cells[c].textContent;
+      s = s.trim(); //cell value
+
+      //ChessCom Puzzle
+      if (c === 4 && !thisIsLichess) {
+        i = s.indexOf("/");
+        a[r][c + 1] = " " + s.substring(i); //Rush move to new column
+        s = s.substring(0, i).trim(); //delete Rush from Puzzle
+      }
+
+      //PlayerName ---> to string
+      if (c === 0) {
+        a[r][c] = s;
+      }
+      //bullet, blitz, rapid, puzzle ---> to number
+      else {
+        n = 0;
+        if (s !== "") {
+          n = parseInt(s, 10);
+          if (isNaN(n) || !(Number.isInteger(n))) {
+            n = 0;
+          }
+        }
+        a[r][c] = n;
+      }
+    }
+  }
+
+  //sort array in column "Bullet"
+  a.sort(function (x, y) {
+    let i = mapTimeControl.get(timeControl); // i=1 - bullet, i=2 - blitz, ...
+    // return x[i] - y[i]; //asc
+    return y[i] - x[i]; //desc
+  })
+
+  // <th class="THeadbulletLichess">Bullet</th>
+  // <th class="THeadbulletChessCom">Bullet</th>
+  selector = '.THead' + timeControl + (thisIsLichess ? 'Lichess' : 'ChessCom');
+
+  //to place sortSymbolAtHead after head of sorted column
+  s = document.querySelector(selector).textContent;
+  lastSymbol = s.slice(-1);
+  if (lastSymbol !== sortSymbolAtHead) {
+    document.querySelector(selector).textContent += sortSymbolAtHead;
+  }
+
+  //delete sortSymbolAtHead from previous sorted column
+  selectorPrev = thisIsLichess ? lastSortSelectorLichess : lastSortSelectorChessCom;
+  if (selectorPrev !== '') {
+    s = document.querySelector(selectorPrev).textContent;
+    lastSymbol = s.slice(-1);
+    if (lastSymbol === sortSymbolAtHead) {
+      document.querySelector(selectorPrev).textContent = s.slice(0, -1);
+    }
+  }
+
+  //set lastSortSelector
+  if (thisIsLichess) {
+    lastSortSelectorLichess = selector;
+  } else {
+    lastSortSelectorChessCom = selector;
+  }
+
+  //fill table from array
+  const pref = thisIsLichess ? '.l' : '.c';
+  for (r = 0; r < rowCount; r++) {
+    const rowNum = r + 1;
+    document.querySelector(pref + 'player' + rowNum).innerHTML = a[r][0]; //innerHTML (because 'href')
+    document.querySelector(pref + 'bullet' + rowNum).textContent = a[r][1] === 0 ? "" : a[r][1];
+    document.querySelector(pref + 'blitz' + rowNum).textContent = a[r][2] === 0 ? "" : a[r][2];
+    document.querySelector(pref + 'rapid' + rowNum).textContent = a[r][3] === 0 ? "" : a[r][3];
+    if (thisIsLichess) {
+      document.querySelector(pref + 'puzzle' + rowNum).textContent = a[r][4] === 0 ? "" : a[r][4];
+    } else {
+      document.querySelector(pref + 'puzzle' + rowNum).textContent = (a[r][4] === 0 ? "" : a[r][4]) + a[r][5]; //ChessCOm: add Rush
+    }
+  }
+}
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -79,7 +250,7 @@ function refreshOneTable(thisIsLichess) {
       elem.style.display = 'block'; //table is visible
     }
     clearTable(thisIsLichess);
-    fillTable(thisIsLichess);
+    fillTableFromServer(thisIsLichess);
   } else {
     if (elem.style.display !== 'none') {
       elem.style.display = 'none'; //table is non-visible
@@ -124,7 +295,7 @@ function clearRowChessCom(rowNum) {
   clearRow(thisIsLichess, rowNum);
 }
 
-function fillTable(thisIsLichess) {
+function fillTableFromServer(thisIsLichess) {
   let elem, playerNames, arPlayerNames, rowNum;
   elem = getElementInputPlayers(thisIsLichess);
   playerNames = elem.value.trim(); //delete begin and end spaces
@@ -220,14 +391,13 @@ function addRowToTable(thisIsLichess, rowNum) {
   trRef.appendChild(tdBlitzRef);
   trRef.appendChild(tdRapidRef);
   trRef.appendChild(tdPuzzleRef);
-  // trRef.appendChild(tdOnlineRef);
 }
 
 //------------------------------------------------------
 //fill table's row for player on Lichess.org
 async function fetchGetLichessOrg(rowNum, playerName) {
 
-  console.log("fetchGetLichessOrg, " + playerName + " - begin ------------------------------");
+  // console.log("fetchGetLichessOrg, " + playerName + " - begin ------------------------------");
 
   clearRowLichess(rowNum);
 
@@ -257,14 +427,14 @@ async function fetchGetLichessOrg(rowNum, playerName) {
     //player not found
     document.querySelector('.lplayer' + rowNum).innerHTML = "? " + playerName;
   };
-  console.log("fetchGetLichessOrg, " + playerName + " - end");
+  // console.log("fetchGetLichessOrg, " + playerName + " - end");
 }
 
 //------------------------------------------------------
 //fill table's row for player on Chess.com
 async function fetchGetChessCom(rowNum, playerName) {
 
-  console.log("fetchGetChessCom, " + playerName + " - begin ------------------------------");
+  // console.log("fetchGetChessCom, " + playerName + " - begin ------------------------------");
 
   let url, response, cell, createdAt, last_online;
   let playerURL = "", onlineSymbol = "";
@@ -331,7 +501,7 @@ async function fetchGetChessCom(rowNum, playerName) {
     console.log(playerName + " - this is 3 error HTTP: " + response.status);
   };
 
-  console.log("fetchGetChessCom, " + playerName + " - end");
+  // console.log("fetchGetChessCom, " + playerName + " - end");
 }
 
 function getJsonValue1(playerName, jsonObj, field1) {
