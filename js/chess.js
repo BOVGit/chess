@@ -154,7 +154,7 @@ function sortTable(thisIsLichess, timeControl) {
         s = s.substring(0, i).trim(); //delete Rush from Puzzle
       }
 
-      //PlayerName ---> to string
+      //playerName ---> to string
       if (c === 0) {
         a[r][c] = s;
       }
@@ -172,7 +172,7 @@ function sortTable(thisIsLichess, timeControl) {
     }
   }
 
-  //sort array in column "Bullet"
+  //sort array in column <timeControl>
   a.sort(function (x, y) {
     let i = mapTimeControl.get(timeControl); // i=1 - bullet, i=2 - blitz, ...
     // return x[i] - y[i]; //asc
@@ -247,14 +247,15 @@ function clearLastSort(thisIsLichess) {
 //refresh all tables
 function refresh() {
   clearAllTables();
+
   refreshOneTable(true);
   if (lastSortTimeControlLichess !== '') {
-    setTimeout(function () { sortTable(true, lastSortTimeControlLichess) }, 500); //execute in N ms
+    setTimeout(function () { sortTable(true, lastSortTimeControlLichess) }, 1000); //execute in N ms
   }
 
   refreshOneTable(false);
   if (lastSortTimeControlChessCom !== '') {
-    setTimeout(function () { sortTable(false, lastSortTimeControlChessCom) }, 2000); //execute in N ms
+    setTimeout(function () { sortTable(false, lastSortTimeControlChessCom) }, 5000); //execute in N ms
   }
 
   setDataToStorage();
@@ -262,15 +263,16 @@ function refresh() {
 }
 
 function refreshLichess() {
-  thisIsLichess = true;
-  clearTable(thisIsLichess);
-  clearLastSort(thisIsLichess);
-  refreshOneTable(thisIsLichess);
-  setDataToStorage();
+  const thisIsLichess = true;
+  refreshOne(thisIsLichess);
 }
 
 function refreshChessCom() {
-  thisIsLichess = false;
+  const thisIsLichess = false;
+  refreshOne(thisIsLichess);
+}
+
+function refreshOne(thisIsLichess) {
   clearTable(thisIsLichess);
   clearLastSort(thisIsLichess);
   refreshOneTable(thisIsLichess);
