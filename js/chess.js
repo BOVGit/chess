@@ -1,4 +1,4 @@
-//v1.021 2021-01-19
+//v1.0.22 2021-01-28
 let urlHttpServiceLichess = "https://lichess.org/api/user/";
 let urlHttpServiceChessCom = "https://api.chess.com/pub/player/";
 let intervalID;
@@ -142,16 +142,16 @@ function sortTable(thisIsLichess, timeControl) {
   for (r = 0; r < rowCount; r++) {
     cells = tableRef.rows[r].cells;
     cellcount = cells.length;
-    a[r] = new Array(cellcount + 1); //"+1" for Rush from ChessCom
+    a[r] = new Array(cellcount + 1); //"+1" Storm from Lichess / Rush from ChessCom
     for (c = 0; c < cellcount; c++) {
       s = (c === 0) ? cells[c].innerHTML : cells[c].textContent;
       s = s.trim(); //cell value
 
-      //ChessCom Puzzle
-      if (c === 4 && !thisIsLichess) {
+      //puzzle
+      if (c === 4) {
         i = s.indexOf("/");
-        a[r][c + 1] = " " + s.substring(i); //Rush move to new column
-        s = s.substring(0, i).trim(); //delete Rush from Puzzle
+        a[r][c + 1] = " " + s.substring(i); //Storm/Rush move to new column
+        s = s.substring(0, i).trim(); //delete Storm/Rush from Puzzle
       }
 
       //playerName ---> to string
@@ -210,11 +210,7 @@ function sortTable(thisIsLichess, timeControl) {
     document.querySelector(pref + 'bullet' + rowNum).textContent = a[r][1] === 0 ? "" : a[r][1];
     document.querySelector(pref + 'blitz' + rowNum).textContent = a[r][2] === 0 ? "" : a[r][2];
     document.querySelector(pref + 'rapid' + rowNum).textContent = a[r][3] === 0 ? "" : a[r][3];
-    if (thisIsLichess) {
-      document.querySelector(pref + 'puzzle' + rowNum).textContent = a[r][4] === 0 ? "" : a[r][4];
-    } else {
-      document.querySelector(pref + 'puzzle' + rowNum).textContent = (a[r][4] === 0 ? "" : a[r][4]) + a[r][5]; //ChessCOm: add Rush
-    }
+    document.querySelector(pref + 'puzzle' + rowNum).textContent = (a[r][4] === 0 ? "" : a[r][4]) + a[r][5]; //add Storm/Rush
   }
 }
 
@@ -447,9 +443,13 @@ async function fetchGetLichessOrg(rowNum, playerName) {
     const isOnline = getJsonValue1(playerName, jsonObj, "online");
     const onlineSymbol = isOnline ? getOnlineSymbol() + " " : "";
 
+    //title (GM, IM, FM, ...)
+    let title = getJsonValue1(playerName, jsonObj, "title");
+    title = (title == undefined) ? "" : title + " ";
+
     //player (href !)
     const playerURL = getJsonValue1(playerName, jsonObj, "url");
-    document.querySelector('.lplayer' + rowNum).innerHTML = '<a href="' + playerURL + '">' + onlineSymbol + playerName + '</a>';
+    document.querySelector('.lplayer' + rowNum).innerHTML = '<a href="' + playerURL + '">' + onlineSymbol + title + playerName + '</a>';
 
     //bullet
     document.querySelector('.lbullet' + rowNum).textContent = getJsonValue3(playerName, jsonObj, "perfs", "bullet", "rating");
@@ -457,8 +457,12 @@ async function fetchGetLichessOrg(rowNum, playerName) {
     document.querySelector('.lblitz' + rowNum).textContent = getJsonValue3(playerName, jsonObj, "perfs", "blitz", "rating");
     //rapid
     document.querySelector('.lrapid' + rowNum).textContent = getJsonValue3(playerName, jsonObj, "perfs", "rapid", "rating");
-    //puzzle
-    document.querySelector('.lpuzzle' + rowNum).textContent = getJsonValue3(playerName, jsonObj, "perfs", "puzzle", "rating");
+
+    //puzzle / max storm
+    const tactics = getJsonValue3(playerName, jsonObj, "perfs", "puzzle", "rating");
+    const rush = getJsonValue3(playerName, jsonObj, "perfs", "storm", "score");
+    const value = (tactics !== "" || rush !== "") ? tactics + " / " + rush : "";
+    document.querySelector('.lpuzzle' + rowNum).textContent = value;
 
   } else {
     console.log(playerName + " - lichess, response-error: " + response.status);
@@ -475,7 +479,7 @@ async function fetchGetChessCom(rowNum, playerName) {
   // console.log("fetchGetChessCom, " + playerName + " - begin ------------------------------");
 
   let url, response, cell, last_online;
-  let playerURL = "", onlineSymbol = "";
+  let playerURL = "", onlineSymbol = "", title = "";
 
   clearRowChessCom(rowNum);
 
@@ -501,6 +505,9 @@ async function fetchGetChessCom(rowNum, playerName) {
     if (response.ok) { // HTTP-state in 200-299
       let jsonObj = await response.json(); // read answer in JSON
       playerURL = getJsonValue1(playerName, jsonObj, "url");
+      //title (GM, IM, FM, ...)
+      title = getJsonValue1(playerName, jsonObj, "title");
+      title = (title == undefined) ? "" : title + " ";
     } else {
       console.log(playerName + " - chess.com, playerURL, response-error: " + response.status);
     };
@@ -514,7 +521,7 @@ async function fetchGetChessCom(rowNum, playerName) {
       cell.innerHTML = "? " + playerName; //player not found
     }
     else {
-      cell.innerHTML = '<a href="' + playerURL + '">' + onlineSymbol + playerName + '</a>';
+      cell.innerHTML = '<a href="' + playerURL + '">' + onlineSymbol + title + playerName + '</a>';
     }
   }
 
