@@ -431,8 +431,6 @@ function addRowToTable(thisIsLichess, rowNum) {
 //fill table's row for player on Lichess.org
 async function fetchGetLichessOrg(rowNum, playerName) {
 
-  // console.log("fetchGetLichessOrg, " + playerName + " - begin ------------------------------");
-
   clearRowLichess(rowNum);
 
   const url = urlHttpServiceLichess + playerName;
@@ -469,14 +467,11 @@ async function fetchGetLichessOrg(rowNum, playerName) {
     //player not found
     document.querySelector('.lplayer' + rowNum).innerHTML = "? " + playerName;
   };
-  // console.log("fetchGetLichessOrg, " + playerName + " - end");
 }
 
 //------------------------------------------------------
 //fill table's row for player on Chess.com
 async function fetchGetChessCom(rowNum, playerName) {
-
-  // console.log("fetchGetChessCom, " + playerName + " - begin ------------------------------");
 
   let url, response, cell, last_online;
   let playerURL = "", onlineSymbol = "", title = "";
@@ -546,8 +541,6 @@ async function fetchGetChessCom(rowNum, playerName) {
   } else {
     console.log(playerName + " - chess.com, bullet...puzzle, fetch-error: " + response.status);
   };
-
-  // console.log("fetchGetChessCom, " + playerName + " - end");
 }
 
 function getJsonValue1(playerName, jsonObj, field1) {
