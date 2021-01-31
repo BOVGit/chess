@@ -1,5 +1,3 @@
-//test insert 2021-01-31
-//2
 //v1.0.22 2021-01-28
 let urlHttpServiceLichess = "https://lichess.org/api/user/";
 let urlHttpServiceChessCom = "https://api.chess.com/pub/player/";
